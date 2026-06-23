@@ -1,11 +1,21 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5001';
 
 export type BillingFrequency = 'Weekly' | 'Monthly' | 'Quarterly' | 'Yearly';
 
 export interface UserDto {
   id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   createdAt: string;
+}
+
+export interface RegisterRequest {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
 }
 
 export interface AuthResponse {
@@ -93,10 +103,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers
+    });
+  } catch {
+    throw new Error(`Could not reach the backend at ${API_BASE_URL}. Start the API and try again.`);
+  }
 
   if (response.status === 401) {
     tokenStore.clear();
@@ -125,10 +140,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
-  register: (email: string, password: string) =>
-    request<AuthResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify({ email, password }) }),
-  login: (email: string, password: string) =>
-    request<AuthResponse>('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  register: (payload: RegisterRequest) =>
+    request<AuthResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
+  login: (username: string, password: string) =>
+    request<AuthResponse>('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
   me: () => request<UserDto>('/api/auth/me'),
   subscriptions: () => request<SubscriptionDto[]>('/api/subscriptions'),
   subscription: (id: number) => request<SubscriptionDto>(`/api/subscriptions/${id}`),
