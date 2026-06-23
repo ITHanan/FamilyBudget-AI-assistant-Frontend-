@@ -22,8 +22,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AppQueryProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/home" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<Navigate to="/" replace />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route element={<ProtectedRoute />}>
