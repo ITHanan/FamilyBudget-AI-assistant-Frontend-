@@ -19,7 +19,7 @@ export function RegisterPage() {
     setError('');
     try {
       const response = await api.register({ username, firstName, lastName, email, password });
-      tokenStore.set(response.token);
+      tokenStore.set(response.token, response.expiresAt);
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not create your account. Check the form and try again.');
@@ -43,7 +43,7 @@ export function RegisterPage() {
           </div>
           <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Email<input className="form-field" value={email} onChange={(e) => setEmail(e.target.value)} type="email" autoComplete="email" required /></label>
           <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Username<input className="form-field" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" minLength={3} required /></label>
-          <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Password<input className="form-field" value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="new-password" minLength={8} required /></label>
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Password<input className="form-field" value={password} onChange={(e) => setPassword(e.target.value)} type="password" autoComplete="new-password" minLength={12} required /></label>
         </fieldset>
         <Button disabled={loading} aria-live="polite">{loading ? 'Creating account...' : 'Register'}</Button>
         <p className="text-sm text-[var(--muted)]">Already registered? <Link className="font-bold text-[var(--accent)]" to="/login">Login</Link></p>

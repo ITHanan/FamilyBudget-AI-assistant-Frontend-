@@ -16,7 +16,7 @@ export function LoginPage() {
     setError('');
     try {
       const response = await api.login(username, password);
-      tokenStore.set(response.token);
+      tokenStore.set(response.token, response.expiresAt);
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not sign you in. Check your username and password.');

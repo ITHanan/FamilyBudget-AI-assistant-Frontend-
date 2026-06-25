@@ -21,6 +21,7 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string;
+  expiresAt: string;
   user: UserDto;
 }
 
@@ -90,9 +91,23 @@ export interface NotificationDto {
 }
 
 export const tokenStore = {
-  get: () => localStorage.getItem('familybudgetai_token'),
-  set: (token: string) => localStorage.setItem('familybudgetai_token', token),
-  clear: () => localStorage.removeItem('familybudgetai_token')
+  get: () => {
+    const expiresAt = localStorage.getItem('familybudgetai_token_expires_at');
+    if (expiresAt && Date.parse(expiresAt) <= Date.now()) {
+      tokenStore.clear();
+      return null;
+    }
+
+    return localStorage.getItem('familybudgetai_token');
+  },
+  set: (token: string, expiresAt: string) => {
+    localStorage.setItem('familybudgetai_token', token);
+    localStorage.setItem('familybudgetai_token_expires_at', expiresAt);
+  },
+  clear: () => {
+    localStorage.removeItem('familybudgetai_token');
+    localStorage.removeItem('familybudgetai_token_expires_at');
+  }
 };
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -124,6 +139,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}`;
+    if (response.status === 429) {
+      message = 'Too many attempts. Wait a minute and try again.';
+    }
     try {
       const body = await response.json();
       if (typeof body.message === 'string') {
