@@ -15,6 +15,7 @@ export interface RegisterRequest {
   username: string;
   firstName: string;
   lastName: string;
+  email: string;
   password: string;
 }
 
@@ -125,7 +126,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     let message = `Request failed with status ${response.status}`;
     try {
       const body = await response.json();
-      message = body.message ?? message;
+      if (typeof body.message === 'string') {
+        message = body.message;
+      } else if (typeof body.title === 'string') {
+        message = body.title;
+      } else if (body.errors && typeof body.errors === 'object') {
+        const validationMessages = Object.values(body.errors).flat();
+        if (validationMessages.length > 0) {
+          message = String(validationMessages[0]);
+        }
+      }
     } catch {
       // Keep default error message.
     }
