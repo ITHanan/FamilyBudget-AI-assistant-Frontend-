@@ -2,15 +2,17 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Menu, Search, Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { api, tokenStore } from '../../api/client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api, NotificationDto, tokenStore } from '../../api/client';
 import { navItems } from '../../data/mockData';
 import { cn } from '../../lib/format';
 import { ThemeSwitcher } from '../ui/ThemeSwitcher';
 import { Button } from '../ui/Button';
+import { useToast } from '../ui/Toast';
 
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -75,9 +77,7 @@ export function AppShell() {
               <Button variant="secondary" className="hidden sm:inline-flex" onClick={() => navigate('/assistant')}>
                 <Sparkles size={16} /> Ask AI
               </Button>
-              <button className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-2 text-[var(--muted)] hover:text-[var(--text)]" aria-label="Notifications">
-                <Bell size={19} />
-              </button>
+              <NotificationsMenu open={notificationsOpen} setOpen={setNotificationsOpen} />
             </div>
           </div>
         </header>
@@ -108,6 +108,76 @@ export function AppShell() {
           })}
         </div>
       </nav>
+    </div>
+  );
+}
+
+function NotificationsMenu({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const { data: notifications = [] } = useQuery({ queryKey: ['notifications'], queryFn: api.notifications });
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const markReadMutation = useMutation({
+    mutationFn: api.markNotificationRead,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      showToast({ tone: 'success', title: 'Reminder marked read' });
+    },
+    onError: (error) => {
+      showToast({ tone: 'error', title: 'Could not update reminder', message: error instanceof Error ? error.message : 'Try again.' });
+    }
+  });
+
+  return (
+    <div className="relative">
+      <button className="relative rounded-lg border border-[var(--border)] bg-[var(--card)] p-2 text-[var(--muted)] hover:text-[var(--text)]" aria-label="Notifications" onClick={() => setOpen(!open)}>
+        <Bell size={19} />
+        {unreadCount > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">{unreadCount}</span>}
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 shadow-[var(--shadow)]"
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <p className="font-bold">Renewal reminders</p>
+              <span className="rounded-full bg-[var(--accent-soft)] px-2 py-1 text-xs font-bold text-[var(--accent)]">{unreadCount} unread</span>
+            </div>
+            <div className="grid max-h-80 gap-2 overflow-y-auto">
+              {notifications.slice(0, 6).map((item) => (
+                <NotificationRow key={item.id} item={item} onMarkRead={() => markReadMutation.mutate(item.id)} disabled={markReadMutation.isPending} />
+              ))}
+              {notifications.length === 0 && (
+                <div className="rounded-lg bg-[var(--surface-muted)] p-4 text-sm text-[var(--muted)]">
+                  No reminders yet. Upcoming subscription renewals will appear here after the backend reminder job runs.
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function NotificationRow({ item, onMarkRead, disabled }: { item: NotificationDto; onMarkRead: () => void; disabled: boolean }) {
+  return (
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] p-3">
+      <div className="flex items-start gap-3">
+        <span className={cn('mt-1 size-2.5 rounded-full', item.isRead ? 'bg-[var(--border)]' : 'bg-red-600')} />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{item.message}</p>
+          <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.createdAt).toLocaleDateString()}</p>
+        </div>
+        {!item.isRead && (
+          <button className="rounded-md px-2 py-1 text-xs font-bold text-[var(--accent)] hover:bg-[var(--card)]" onClick={onMarkRead} disabled={disabled}>
+            Read
+          </button>
+        )}
+      </div>
     </div>
   );
 }

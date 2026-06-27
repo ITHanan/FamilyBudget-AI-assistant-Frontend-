@@ -2,6 +2,20 @@ import { SubscriptionDto } from '../api/client';
 
 const palette = ['#8b5cf6', '#14b8a6', '#38bdf8', '#f59e0b', '#f472b6', '#22c55e', '#ef4444'];
 
+export const subscriptionCategories = [
+  'Streaming',
+  'Music',
+  'Productivity',
+  'Utilities',
+  'Education',
+  'Fitness',
+  'News',
+  'Gaming',
+  'Cloud Storage',
+  'Family',
+  'Other'
+];
+
 export interface CategorySpend {
   name: string;
   value: number;

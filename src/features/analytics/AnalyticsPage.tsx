@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { BadgeCheck, Clock } from 'lucide-react';
 import { api } from '../../api/client';
 import { Card, StaticCard } from '../../components/ui/Card';
 import { Page } from '../../components/ui/Page';
@@ -12,6 +13,14 @@ const growthData = [
   { name: 'Q2', value: 11 },
   { name: 'Q3', value: 8 },
   { name: 'Q4', value: 14 }
+];
+
+const roadmapItems = [
+  { title: 'Family sharing', description: 'Invite household members and share subscription visibility.', status: 'Later' },
+  { title: 'Duplicate detection', description: 'Find overlapping subscriptions and repeated services.', status: 'Later' },
+  { title: 'Grocery tracking', description: 'Track grocery spend after bank import support is added.', status: 'Later' },
+  { title: 'Utility tracking', description: 'Separate electricity, water, internet, and mobile bills.', status: 'Later' },
+  { title: 'Bill forecasting', description: 'Forecast upcoming bills from historical transactions.', status: 'Later' }
 ];
 
 export function AnalyticsPage() {
@@ -72,6 +81,27 @@ export function AnalyticsPage() {
             ))}
             {categoryBreakdown.length === 0 && <p className="text-sm text-[var(--muted)]">Add subscriptions to see category spending.</p>}
           </div>
+        </div>
+      </StaticCard>
+
+      <StaticCard>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold">Product Roadmap</h2>
+            <p className="text-sm text-[var(--muted)]">Planned modules that build on subscriptions and future bank imports.</p>
+          </div>
+          <BadgeCheck className="text-[var(--accent)]" size={24} />
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {roadmapItems.map((item) => (
+            <div key={item.title} className="rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] p-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h3 className="font-bold">{item.title}</h3>
+                <span className="inline-flex items-center gap-1 rounded-full bg-[var(--card)] px-2 py-1 text-xs font-bold text-[var(--muted)]"><Clock size={12} /> {item.status}</span>
+              </div>
+              <p className="text-sm text-[var(--muted)]">{item.description}</p>
+            </div>
+          ))}
         </div>
       </StaticCard>
     </Page>

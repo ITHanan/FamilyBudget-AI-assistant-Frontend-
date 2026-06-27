@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Page } from '../../components/ui/Page';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { useToast } from '../../components/ui/Toast';
+import { subscriptionCategories } from '../../lib/categories';
 import { currency, shortDate } from '../../lib/format';
 
 const emptyForm: SubscriptionRequest = {
@@ -16,7 +17,7 @@ const emptyForm: SubscriptionRequest = {
   cost: 0,
   billingFrequency: 'Monthly',
   renewalDate: '2026-07-01',
-  category: 'Streaming'
+  category: subscriptionCategories[0]
 };
 
 export function SubscriptionsPage() {
@@ -182,7 +183,7 @@ export function SubscriptionsPage() {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Renewal Date<input className="form-field" type="date" value={form.renewalDate} onChange={(event) => setForm({ ...form, renewalDate: event.target.value })} required aria-invalid={Boolean(fieldErrors.renewalDate)} />{fieldErrors.renewalDate && <span className="text-xs font-semibold text-red-600">{fieldErrors.renewalDate}</span>}</label>
-                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Category<input className="form-field" value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} required aria-invalid={Boolean(fieldErrors.category)} />{fieldErrors.category && <span className="text-xs font-semibold text-red-600">{fieldErrors.category}</span>}</label>
+                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Category<select className="form-field" value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} required aria-invalid={Boolean(fieldErrors.category)}>{subscriptionCategories.map((category) => <option key={category}>{category}</option>)}</select>{fieldErrors.category && <span className="text-xs font-semibold text-red-600">{fieldErrors.category}</span>}</label>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>

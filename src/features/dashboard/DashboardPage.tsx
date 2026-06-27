@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, CalendarClock, CreditCard, PiggyBank, Plus, Receipt, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, CalendarClock, CreditCard, HeartPulse, PiggyBank, Plus, Receipt, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { api } from '../../api/client';
@@ -37,8 +37,8 @@ export function DashboardPage() {
   if (isLoading || !data) {
     return (
       <Page title="Dashboard" eyebrow="Family subscription command center">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="h-32" />
           ))}
         </div>
@@ -58,10 +58,11 @@ export function DashboardPage() {
         />
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard icon={CreditCard} label="Total Monthly Cost" value={currency.format(data.totalMonthlySubscriptionCost)} detail="Calculated by backend" />
         <MetricCard icon={CalendarClock} label="Active Subscriptions" value={String(data.subscriptionCount)} detail={`${data.upcomingRenewalsInNext7Days} renew within 7 days`} />
         <MetricCard icon={TrendingUp} label="Yearly Cost" value={currency.format(data.totalYearlySubscriptionCost)} detail="Projected annual spend" />
+        <MetricCard icon={HeartPulse} label="Health Score" value={`${data.financialHealth.score}/100`} detail={data.financialHealth.status} />
         <MetricCard icon={PiggyBank} label="Potential Savings" value={currency.format(data.financialHealth.potentialMonthlySavings)} detail={data.financialHealth.status} />
       </div>
 
