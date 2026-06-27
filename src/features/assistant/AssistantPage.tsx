@@ -5,6 +5,9 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { api, MessageDto } from '../../api/client';
 import { Button } from '../../components/ui/Button';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { Skeleton } from '../../components/ui/Skeleton';
+import { useToast } from '../../components/ui/Toast';
 import { chatPresets } from '../../data/mockData';
 
 type DraftMessage = {
@@ -18,6 +21,7 @@ const quickTopics = ['Subscription Costs', 'Saving Ideas', 'Upcoming Renewals', 
 
 export function AssistantPage() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const [input, setInput] = useState('');
   const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -89,6 +93,7 @@ export function AssistantPage() {
       setDrafts([]);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Could not send message.';
+      showToast({ tone: 'error', title: 'Assistant unavailable', message });
       setDrafts([userDraft, { id: crypto.randomUUID(), role: 'assistant', content: message, createdAt: new Date().toISOString() }]);
     } finally {
       setIsTyping(false);
@@ -107,7 +112,7 @@ export function AssistantPage() {
   }
 
   return (
-    <section className="mx-auto grid h-[calc(100vh-128px)] min-h-[680px] max-w-7xl overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-[var(--shadow)] lg:grid-cols-[300px_minmax(0,1fr)]">
+    <section className="mx-auto grid h-[calc(100dvh-112px)] min-h-[620px] max-w-7xl overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-[var(--shadow)] sm:h-[calc(100vh-128px)] lg:grid-cols-[300px_minmax(0,1fr)]">
       <aside className="hidden border-r border-[var(--border)] bg-[var(--surface-muted)] p-4 lg:flex lg:flex-col">
         <ChatSidebar
           conversations={conversationsQuery.data ?? []}
@@ -133,10 +138,30 @@ export function AssistantPage() {
 
         <div className="min-h-0 overflow-y-auto px-4 py-6 sm:px-8" aria-live="polite">
           <div className="mx-auto grid max-w-3xl gap-5">
-            {messages.length === 0 && (
-              <MessageBubble message={{ id: 0, role: 'assistant', content: 'Hi, I am FamilyBudget AI. Ask me about your subscriptions, renewals, or savings opportunities.', createdAt: new Date().toISOString() }} />
+            {conversationQuery.isLoading && activeConversationId !== null && (
+              <div className="grid gap-4">
+                <Skeleton className="h-20 max-w-[80%]" />
+                <Skeleton className="ml-auto h-16 max-w-[72%]" />
+                <Skeleton className="h-28 max-w-[86%]" />
+              </div>
             )}
-            {messages.map((message) => <MessageBubble key={`${message.role}-${message.id}-${message.createdAt}`} message={message} />)}
+            {!conversationQuery.isLoading && messages.length === 0 && (
+              <EmptyState
+                icon={Sparkles}
+                title="Ask about your subscriptions"
+                message="The assistant can explain renewals, totals, saving options, and category patterns from your saved data."
+                action={
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {chatPresets.slice(0, 2).map((preset) => (
+                      <button key={preset} onClick={() => void send(preset)} className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs font-semibold text-[var(--muted)] hover:text-[var(--text)]">
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                }
+              />
+            )}
+            {!conversationQuery.isLoading && messages.map((message) => <MessageBubble key={`${message.role}-${message.id}-${message.createdAt}`} message={message} />)}
             {isTyping && drafts.length < 2 && <TypingIndicator />}
             <div ref={bottomRef} />
           </div>
@@ -205,10 +230,10 @@ function ChatSidebar({
   return (
     <div className="flex h-full flex-col gap-4">
       <Button onClick={newChat} className="w-full"><Plus size={16} /> New Chat</Button>
-      <div className="grid gap-2">
+      <div className="grid gap-2 overflow-y-auto pr-1">
         {conversations.map((thread) => (
           <button key={thread.id} onClick={() => setActiveConversationId(thread.id)} className={`rounded-lg px-3 py-3 text-left text-sm font-semibold transition ${activeConversationId === thread.id ? 'bg-[var(--card)] text-[var(--text)] shadow-sm' : 'text-[var(--muted)] hover:bg-[var(--card)] hover:text-[var(--text)]'}`}>
-            {thread.title}
+            <span className="line-clamp-2">{thread.title}</span>
           </button>
         ))}
         {conversations.length === 0 && quickTopics.map((thread) => (

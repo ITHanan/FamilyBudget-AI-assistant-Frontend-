@@ -69,7 +69,10 @@ export function AppShell() {
               <span>Search expenses, renewals, categories...</span>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="secondary" className="hidden sm:inline-flex">
+              <div className="hidden md:block">
+                <ThemeSwitcher compact />
+              </div>
+              <Button variant="secondary" className="hidden sm:inline-flex" onClick={() => navigate('/assistant')}>
                 <Sparkles size={16} /> Ask AI
               </Button>
               <button className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-2 text-[var(--muted)] hover:text-[var(--text)]" aria-label="Notifications">
@@ -86,7 +89,7 @@ export function AppShell() {
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] px-2 py-2 backdrop-blur-xl lg:hidden" aria-label="Mobile navigation">
         <div className="grid grid-cols-5 gap-1">
-          {navItems.slice(0, 5).map((item) => {
+          {navItems.filter((item) => ['/dashboard', '/subscriptions', '/assistant', '/analytics', '/settings'].includes(item.href)).map((item) => {
             const Icon = item.icon;
             const active = location.pathname.startsWith(item.href);
             return (

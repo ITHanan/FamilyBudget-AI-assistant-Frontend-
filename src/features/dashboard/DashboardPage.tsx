@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, CalendarClock, CreditCard, PiggyBank, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, CalendarClock, CreditCard, PiggyBank, Plus, Receipt, TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { api } from '../../api/client';
 import { Button } from '../../components/ui/Button';
 import { Card, StaticCard } from '../../components/ui/Card';
+import { EmptyState } from '../../components/ui/EmptyState';
 import { Page } from '../../components/ui/Page';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { renewalIcons, savingsIdeas, spendingSeries } from '../../data/mockData';
@@ -47,6 +49,15 @@ export function DashboardPage() {
 
   return (
     <Page title="Dashboard" eyebrow="Family subscription command center">
+      {data.subscriptionCount === 0 && (
+        <EmptyState
+          icon={Receipt}
+          title="Start by adding subscriptions"
+          message="Your dashboard will fill with totals, renewal alerts, category spending, and AI recommendations after the first subscription is saved."
+          action={<Link to="/subscriptions" className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-4 text-sm font-semibold text-[var(--accent-contrast)] shadow-sm transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"><Plus size={16} /> Add Subscription</Link>}
+        />
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard icon={CreditCard} label="Total Monthly Cost" value={currency.format(data.totalMonthlySubscriptionCost)} detail="Calculated by backend" />
         <MetricCard icon={CalendarClock} label="Active Subscriptions" value={String(data.subscriptionCount)} detail={`${data.upcomingRenewalsInNext7Days} renew within 7 days`} />
@@ -55,15 +66,15 @@ export function DashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(340px,0.8fr)]">
-        <StaticCard className="min-h-[360px]">
+        <StaticCard className="min-h-[360px] overflow-hidden">
           <div className="mb-6 flex items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-bold">Monthly Spending Overview</h2>
               <p className="text-sm text-[var(--muted)]">Subscription cost trend across the year</p>
             </div>
-            <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold text-[var(--accent)]">Live forecast</span>
+            <span className="hidden rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold text-[var(--accent)] sm:inline-flex">Live forecast</span>
           </div>
-          <ResponsiveContainer width="100%" height={275}>
+          <ResponsiveContainer width="100%" height={260}>
             <LineChart data={spendingSeries} margin={{ top: 10, right: 18, left: -16, bottom: 0 }}>
               <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
@@ -73,30 +84,33 @@ export function DashboardPage() {
           </ResponsiveContainer>
         </StaticCard>
 
-        <StaticCard>
+        <StaticCard className="overflow-hidden">
           <h2 className="text-lg font-bold">Top Categories</h2>
           <p className="mb-4 text-sm text-[var(--muted)]">Where recurring spend clusters</p>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie data={categorySpend} dataKey="value" nameKey="name" innerRadius={62} outerRadius={92} paddingAngle={4} animationDuration={900}>
-                {categorySpend.map((entry) => (
-                  <Cell key={entry.name} fill={entry.fill} />
+          {categorySpend.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height={210}>
+                <PieChart>
+                  <Pie data={categorySpend} dataKey="value" nameKey="name" innerRadius={58} outerRadius={88} paddingAngle={4} animationDuration={900}>
+                    {categorySpend.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid gap-2">
+                {categorySpend.map((item) => (
+                  <div key={item.name} className="flex items-center justify-between gap-3 text-sm">
+                    <span className="flex min-w-0 items-center gap-2 text-[var(--muted)]"><span className="size-2.5 shrink-0 rounded-full" style={{ background: item.fill }} /><span className="truncate">{item.name}</span> <span className="text-xs">({item.count})</span></span>
+                    <strong>{currency.format(item.value)}</strong>
+                  </div>
                 ))}
-              </Pie>
-              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="grid gap-2">
-            {categorySpend.map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2 text-[var(--muted)]"><span className="size-2.5 rounded-full" style={{ background: item.fill }} />{item.name} <span className="text-xs">({item.count})</span></span>
-                <strong>{currency.format(item.value)}</strong>
               </div>
-            ))}
-            {categorySpend.length === 0 && (
-              <p className="rounded-lg bg-[var(--surface-muted)] p-3 text-sm text-[var(--muted)]">Add subscriptions to see category spending.</p>
-            )}
-          </div>
+            </>
+          ) : (
+            <EmptyState icon={Receipt} title="No categories yet" message="Category totals appear after you add subscriptions." />
+          )}
         </StaticCard>
       </div>
 
@@ -123,9 +137,7 @@ export function DashboardPage() {
                 </motion.div>
               );
             })}
-            {data.upcomingRenewals.length === 0 && (
-              <p className="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-4 text-sm text-[var(--muted)]">No upcoming renewals yet. Add subscriptions to populate this list.</p>
-            )}
+            {data.upcomingRenewals.length === 0 && <EmptyState icon={CalendarClock} title="No renewals due soon" message="Renewals inside the next 7 days will appear here." />}
           </div>
         </StaticCard>
 

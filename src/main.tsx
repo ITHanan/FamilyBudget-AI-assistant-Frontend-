@@ -5,6 +5,7 @@ import { AppQueryProvider } from './app/QueryProvider';
 import { ThemeProvider } from './app/ThemeProvider';
 import { AppShell } from './components/AppShell';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ToastProvider } from './components/ui/Toast';
 import { AnalyticsPage } from './features/analytics/AnalyticsPage';
 import { AssistantPage } from './features/assistant/AssistantPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
@@ -20,26 +21,28 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider>
       <AppQueryProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/home" element={<Navigate to="/" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route element={<AppShell />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/subscriptions" element={<SubscriptionsPage />} />
-                <Route path="/assistant" element={<AssistantPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/profile" element={<SettingsPage profileMode />} />
+        <ToastProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/home" element={<Navigate to="/" replace />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AppShell />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/subscriptions" element={<SubscriptionsPage />} />
+                  <Route path="/assistant" element={<AssistantPage />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/profile" element={<SettingsPage profileMode />} />
+                </Route>
               </Route>
-            </Route>
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
       </AppQueryProvider>
     </ThemeProvider>
   </React.StrictMode>
