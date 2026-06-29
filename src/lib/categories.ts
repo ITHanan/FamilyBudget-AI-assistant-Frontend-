@@ -16,6 +16,21 @@ export const subscriptionCategories = [
   'Other'
 ];
 
+export const transactionCategories = [
+  'Income',
+  'Housing',
+  'Groceries',
+  'Transport',
+  'Subscriptions',
+  'Utilities',
+  'Shopping',
+  'Restaurants',
+  'Healthcare',
+  'Savings',
+  'Entertainment',
+  'Other'
+];
+
 export interface CategorySpend {
   name: string;
   value: number;

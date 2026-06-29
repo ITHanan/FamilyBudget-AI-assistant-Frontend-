@@ -89,7 +89,7 @@ export function AppShell() {
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_92%,transparent)] px-2 py-2 backdrop-blur-xl lg:hidden" aria-label="Mobile navigation">
         <div className="grid grid-cols-5 gap-1">
-          {navItems.filter((item) => ['/dashboard', '/subscriptions', '/assistant', '/analytics', '/settings'].includes(item.href)).map((item) => {
+          {navItems.filter((item) => ['/dashboard', '/subscriptions', '/statements', '/assistant', '/settings'].includes(item.href)).map((item) => {
             const Icon = item.icon;
             const active = location.pathname.startsWith(item.href);
             return (
@@ -231,8 +231,10 @@ function Brand() {
 
 function UserCard({ onLogout }: { onLogout: () => void }) {
   const { data: user } = useQuery({ queryKey: ['me'], queryFn: api.me });
-  const fullName = user ? `${user.firstName} ${user.lastName}` : 'Family member';
-  const initials = user ? `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase() : 'FB';
+  const firstName = user?.firstName?.trim() ?? '';
+  const lastName = user?.lastName?.trim() ?? '';
+  const fullName = user && (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Family member';
+  const initials = user ? `${firstName.at(0) ?? ''}${lastName.at(0) ?? ''}`.toUpperCase() || 'FB' : 'FB';
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-[var(--shadow)]">

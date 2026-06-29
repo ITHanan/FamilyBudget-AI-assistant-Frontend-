@@ -90,6 +90,77 @@ export interface NotificationDto {
   createdAt: string;
 }
 
+export interface BankStatementDto {
+  id: number;
+  originalFileName: string;
+  bankName?: string | null;
+  statementPeriodStart?: string | null;
+  statementPeriodEnd?: string | null;
+  uploadedAt: string;
+  importedAt?: string | null;
+  transactionCount: number;
+  importStatus: string;
+  importError?: string | null;
+}
+
+export interface BankTransactionDto {
+  id: number;
+  bankStatementId: number;
+  transactionDate: string;
+  description: string;
+  amount: number;
+  balance?: number | null;
+  currency: string;
+  category: string;
+  rawText: string;
+  isIncome: boolean;
+  isInternalTransfer: boolean;
+  isRecurringCandidate: boolean;
+  needsReview: boolean;
+  createdAt: string;
+}
+
+export interface BankStatementImportResultDto {
+  statementId: number;
+  transactionCount: number;
+  needsReviewCount: number;
+  recurringCandidateCount: number;
+}
+
+export interface CategoryTotalDto {
+  category: string;
+  amount: number;
+  count: number;
+}
+
+export interface TransactionSummaryDto {
+  income: number;
+  expenses: number;
+  netSavings: number;
+  savingsRate: number;
+  categoryTotals: CategoryTotalDto[];
+  largestTransactions: BankTransactionDto[];
+  recurringPaymentTotal: number;
+}
+
+export interface RecurringPaymentCandidateDto {
+  merchantName: string;
+  averageAmount: number;
+  billingFrequency: string;
+  confidence: number;
+  firstSeenDate: string;
+  lastSeenDate: string;
+  suggestedCategory: string;
+  transactionCount: number;
+}
+
+export interface UserSuggestionDto {
+  id: number;
+  message: string;
+  recipientEmail: string;
+  createdAt: string;
+}
+
 export const tokenStore = {
   get: () => {
     const expiresAt = localStorage.getItem('familybudgetai_token_expires_at');
@@ -169,6 +240,41 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function upload<T>(path: string, formData: FormData): Promise<T> {
+  const token = tokenStore.get();
+  const headers = new Headers();
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+  } catch {
+    throw new Error(`Could not reach the backend at ${API_BASE_URL}. Start the API and try again.`);
+  }
+
+  if (!response.ok) {
+    let message = `Request failed with status ${response.status}`;
+    try {
+      const body = await response.json();
+      if (typeof body.detail === 'string') message = body.detail;
+      else if (typeof body.message === 'string') message = body.message;
+      else if (typeof body.title === 'string') message = body.title;
+    } catch {
+      // Keep default error message.
+    }
+    throw new Error(message);
+  }
+
+  return response.json() as Promise<T>;
+}
+
 export const api = {
   register: (payload: RegisterRequest) =>
     request<AuthResponse>('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
@@ -194,5 +300,24 @@ export const api = {
     }),
   deleteConversation: (id: number) => request<void>(`/api/ai/conversations/${id}`, { method: 'DELETE' }),
   notifications: () => request<NotificationDto[]>('/api/notifications'),
-  markNotificationRead: (id: number) => request<void>(`/api/notifications/mark-read/${id}`, { method: 'POST' })
+  markNotificationRead: (id: number) => request<void>(`/api/notifications/mark-read/${id}`, { method: 'POST' }),
+  bankStatements: () => request<BankStatementDto[]>('/api/bank-statements'),
+  uploadBankStatement: (file: File) => {
+    const formData = new FormData();
+    formData.set('file', file);
+    return upload<BankStatementImportResultDto>('/api/bank-statements/upload', formData);
+  },
+  bankStatementTransactions: (statementId: number) => request<BankTransactionDto[]>(`/api/bank-statements/${statementId}/transactions`),
+  updateTransactionCategory: (id: number, category: string, rememberRule: boolean) =>
+    request<BankTransactionDto>(`/api/transactions/${id}/category`, {
+      method: 'PUT',
+      body: JSON.stringify({ category, rememberRule })
+    }),
+  transactionSummary: () => request<TransactionSummaryDto>('/api/transactions/summary'),
+  recurringCandidates: () => request<RecurringPaymentCandidateDto[]>('/api/transactions/recurring-candidates'),
+  createUserSuggestion: (message: string) =>
+    request<UserSuggestionDto>('/api/user-suggestions', {
+      method: 'POST',
+      body: JSON.stringify({ message })
+    })
 };

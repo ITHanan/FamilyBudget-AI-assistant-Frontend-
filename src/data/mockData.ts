@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, CalendarDays, Film, Music, Shield, Sparkles, Wallet } from 'lucide-react';
+import { BarChart3, BookOpen, CalendarDays, FileText, Film, Music, Shield, Sparkles, Wallet } from 'lucide-react';
 
 export type SubscriptionStatus = 'Active' | 'Trial' | 'Paused';
 
@@ -62,6 +62,7 @@ export const chatPresets = [
 export const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: BarChart3 },
   { label: 'Subscriptions', href: '/subscriptions', icon: Wallet },
+  { label: 'Statements', href: '/statements', icon: FileText },
   { label: 'AI Assistant', href: '/assistant', icon: Sparkles },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
   { label: 'Calendar', href: '/calendar', icon: CalendarDays },

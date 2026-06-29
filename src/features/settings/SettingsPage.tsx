@@ -1,18 +1,45 @@
+import { useQuery } from '@tanstack/react-query';
 import { Bell, Lock, User } from 'lucide-react';
+import { api } from '../../api/client';
 import { Page } from '../../components/ui/Page';
 import { StaticCard } from '../../components/ui/Card';
+import { Skeleton } from '../../components/ui/Skeleton';
 import { ThemeSwitcher } from '../../components/ui/ThemeSwitcher';
 
 export function SettingsPage({ profileMode = false }: { profileMode?: boolean }) {
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: api.me
+  });
+
+  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : '';
+
   return (
     <Page title={profileMode ? 'Profile' : 'Settings'} eyebrow="Account preferences">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <StaticCard>
           <SectionTitle icon={User} title="Profile" />
-          <div className="mt-4 grid gap-4">
-            <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Name<input className="form-field" defaultValue="Ithan Eriksson" /></label>
-            <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Email<input className="form-field" defaultValue="ithan@example.com" /></label>
-          </div>
+          {error ? (
+            <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-600" role="alert">
+              {error instanceof Error ? error.message : 'Could not load profile information.'}
+            </p>
+          ) : isLoading || !user ? (
+            <div className="mt-4 grid gap-4">
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+            </div>
+          ) : (
+            <div className="mt-4 grid gap-4">
+              <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">
+                Full name
+                <input className="form-field cursor-not-allowed bg-[var(--surface-muted)]" value={fullName} readOnly aria-readonly="true" />
+              </label>
+              <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">
+                Email
+                <input className="form-field cursor-not-allowed bg-[var(--surface-muted)]" value={user.email} readOnly aria-readonly="true" />
+              </label>
+            </div>
+          )}
         </StaticCard>
         <StaticCard>
           <SectionTitle icon={Bell} title="Notifications" />

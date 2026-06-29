@@ -11,6 +11,7 @@ import { AssistantPage } from './features/assistant/AssistantPage';
 import { CalendarPage } from './features/calendar/CalendarPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { SettingsPage } from './features/settings/SettingsPage';
+import { StatementsPage } from './features/statements/StatementsPage';
 import { SubscriptionsPage } from './features/subscriptions/SubscriptionsPage';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route path="/subscriptions" element={<SubscriptionsPage />} />
+                  <Route path="/statements" element={<StatementsPage />} />
                   <Route path="/assistant" element={<AssistantPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
                   <Route path="/calendar" element={<CalendarPage />} />

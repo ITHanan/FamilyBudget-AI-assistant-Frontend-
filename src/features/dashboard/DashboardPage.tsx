@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { FormEvent, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, CalendarClock, CreditCard, HeartPulse, PiggyBank, Plus, Receipt, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, CalendarClock, CheckCircle2, CreditCard, HeartPulse, MessageSquareText, PiggyBank, Plus, Receipt, Send, TrendingUp, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { api } from '../../api/client';
@@ -9,11 +10,16 @@ import { Card, StaticCard } from '../../components/ui/Card';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Page } from '../../components/ui/Page';
 import { Skeleton } from '../../components/ui/Skeleton';
+import { useToast } from '../../components/ui/Toast';
 import { renewalIcons, savingsIdeas, spendingSeries } from '../../data/mockData';
 import { getCategorySpend } from '../../lib/categories';
 import { currency, shortDate } from '../../lib/format';
 
 export function DashboardPage() {
+  const { showToast } = useToast();
+  const [suggestion, setSuggestion] = useState('');
+  const [suggestionError, setSuggestionError] = useState('');
+  const [showSuggestionConfirmation, setShowSuggestionConfirmation] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ['dashboard-summary'],
     queryFn: api.dashboard
@@ -22,7 +28,37 @@ export function DashboardPage() {
     queryKey: ['subscriptions'],
     queryFn: api.subscriptions
   });
+  const suggestionMutation = useMutation({
+    mutationFn: api.createUserSuggestion,
+    onSuccess: () => {
+      setSuggestion('');
+      setSuggestionError('');
+      setShowSuggestionConfirmation(true);
+      showToast({
+        tone: 'success',
+        title: 'Suggestion sent',
+        message: 'Thanks for helping improve the product.'
+      });
+    },
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : 'Could not send your suggestion.';
+      setSuggestionError(message);
+      showToast({ tone: 'error', title: 'Suggestion failed', message });
+    }
+  });
   const categorySpend = getCategorySpend(subscriptions);
+
+  function submitSuggestion(event: FormEvent) {
+    event.preventDefault();
+    const message = suggestion.trim();
+    if (message.length < 5) {
+      setSuggestionError('Write at least 5 characters.');
+      return;
+    }
+
+    setSuggestionError('');
+    suggestionMutation.mutate(message);
+  }
 
   if (error) {
     return (
@@ -161,6 +197,73 @@ export function DashboardPage() {
           </Button>
         </StaticCard>
       </div>
+
+      <StaticCard>
+        <div>
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="grid size-10 place-items-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]"><MessageSquareText size={18} /></span>
+              <h2 className="text-lg font-bold">Product Suggestions</h2>
+            </div>
+            <p className="mt-2 text-sm text-[var(--muted)]">Share recommendations for improving FamilyBudget AI.</p>
+          </div>
+        </div>
+        <form className="mt-5 grid gap-3" onSubmit={submitSuggestion}>
+          <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">
+            Suggestion
+            <textarea
+              className="form-field min-h-28 resize-y"
+              value={suggestion}
+              onChange={(event) => setSuggestion(event.target.value)}
+              maxLength={2000}
+              placeholder="Tell us what would make this product better."
+              disabled={suggestionMutation.isPending}
+              required
+              aria-invalid={Boolean(suggestionError)}
+            />
+          </label>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className={suggestionError ? 'text-sm font-semibold text-red-600' : 'text-sm text-[var(--muted)]'} role={suggestionError ? 'alert' : undefined}>
+              {suggestionError || `${suggestion.length}/2000 characters`}
+            </p>
+            <Button className="sm:w-auto" disabled={suggestionMutation.isPending}>
+              <Send size={16} />
+              {suggestionMutation.isPending ? 'Sending...' : 'Send Suggestion'}
+            </Button>
+          </div>
+        </form>
+      </StaticCard>
+
+      {showSuggestionConfirmation && (
+        <div className="fixed inset-0 z-[90] grid place-items-center bg-black/45 px-4" role="dialog" aria-modal="true" aria-labelledby="suggestion-confirmation-title">
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="w-full max-w-md rounded-lg border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)]"
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600">
+                <CheckCircle2 size={22} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 id="suggestion-confirmation-title" className="text-lg font-bold">Suggestion received</h2>
+                <p className="mt-1 text-sm text-[var(--muted)]">Thank you. Your suggestion has been saved and will be reviewed.</p>
+              </div>
+              <button
+                type="button"
+                className="rounded-md p-1 text-[var(--muted)] hover:bg-[var(--surface-muted)]"
+                onClick={() => setShowSuggestionConfirmation(false)}
+                aria-label="Close confirmation"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <Button className="mt-5 w-full" onClick={() => setShowSuggestionConfirmation(false)}>
+              Done
+            </Button>
+          </motion.div>
+        </div>
+      )}
     </Page>
   );
 }
