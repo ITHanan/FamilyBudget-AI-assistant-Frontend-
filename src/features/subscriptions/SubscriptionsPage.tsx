@@ -100,7 +100,7 @@ export function SubscriptionsPage() {
             {Array.from({ length: 5 }).map((_, index) => <Skeleton key={index} className="h-14" />)}
           </div>
         ) : subscriptionsQuery.error ? (
-          <p className="p-5 font-semibold text-red-600">{subscriptionsQuery.error instanceof Error ? subscriptionsQuery.error.message : 'Could not load subscriptions.'}</p>
+          <p className="p-5 font-semibold text-[var(--danger)]">{subscriptionsQuery.error instanceof Error ? subscriptionsQuery.error.message : 'Could not load subscriptions.'}</p>
         ) : (subscriptionsQuery.data ?? []).length === 0 ? (
           <div className="p-5">
             <EmptyState icon={Receipt} title="No subscriptions yet" message="Add recurring household costs to unlock dashboard totals, renewal alerts, and AI analysis." action={<Button onClick={openCreate}><Plus size={16} /> Add Subscription</Button>} />
@@ -129,7 +129,7 @@ export function SubscriptionsPage() {
                     <td className="px-5 py-4 text-[var(--muted)]">{item.billingFrequency}</td>
                     <td className="px-5 py-4 text-[var(--muted)]">{shortDate.format(new Date(item.renewalDate))}</td>
                     <td className="px-5 py-4"><span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold text-[var(--accent)]">{item.category}</span></td>
-                    <td className="px-5 py-4"><span className="rounded-full bg-emerald-500/12 px-3 py-1 text-xs font-bold text-emerald-600">Active</span></td>
+                    <td className="px-5 py-4"><span className="rounded-full bg-[var(--success-soft)] px-3 py-1 text-xs font-bold text-[var(--success)]">Active</span></td>
                     <td className="px-5 py-4">
                       <div className="flex gap-2">
                         <Button variant="secondary" className="px-3" onClick={() => openEdit(item)} aria-label={`Edit ${item.name}`}><Edit3 size={15} /></Button>
@@ -175,15 +175,15 @@ export function SubscriptionsPage() {
                 <button className="rounded-lg p-2 text-[var(--muted)] hover:bg-[var(--surface-muted)]" onClick={() => setModalOpen(false)} aria-label="Close modal"><X size={19} /></button>
               </div>
               <form onSubmit={submit} className="grid gap-4">
-                {saveMutation.error && <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-600">{saveMutation.error instanceof Error ? saveMutation.error.message : 'Could not save subscription.'}</p>}
-                <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Name<input className="form-field" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required aria-invalid={Boolean(fieldErrors.name)} />{fieldErrors.name && <span className="text-xs font-semibold text-red-600">{fieldErrors.name}</span>}</label>
+                {saveMutation.error && <p className="rounded-lg bg-[var(--danger-soft)] px-3 py-2 text-sm font-semibold text-[var(--danger)]">{saveMutation.error instanceof Error ? saveMutation.error.message : 'Could not save subscription.'}</p>}
+                <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Name<input className="form-field" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required aria-invalid={Boolean(fieldErrors.name)} />{fieldErrors.name && <span className="text-xs font-semibold text-[var(--danger)]">{fieldErrors.name}</span>}</label>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Cost<input className="form-field" type="number" min="0" step="0.01" value={form.cost} onChange={(event) => setForm({ ...form, cost: Number(event.target.value) })} required aria-invalid={Boolean(fieldErrors.cost)} />{fieldErrors.cost && <span className="text-xs font-semibold text-red-600">{fieldErrors.cost}</span>}</label>
+                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Cost<input className="form-field" type="number" min="0" step="0.01" value={form.cost} onChange={(event) => setForm({ ...form, cost: Number(event.target.value) })} required aria-invalid={Boolean(fieldErrors.cost)} />{fieldErrors.cost && <span className="text-xs font-semibold text-[var(--danger)]">{fieldErrors.cost}</span>}</label>
                   <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Frequency<select className="form-field" value={form.billingFrequency} onChange={(event) => setForm({ ...form, billingFrequency: event.target.value as BillingFrequency })}><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Yearly</option></select></label>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Renewal Date<input className="form-field" type="date" value={form.renewalDate} onChange={(event) => setForm({ ...form, renewalDate: event.target.value })} required aria-invalid={Boolean(fieldErrors.renewalDate)} />{fieldErrors.renewalDate && <span className="text-xs font-semibold text-red-600">{fieldErrors.renewalDate}</span>}</label>
-                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Category<select className="form-field" value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} required aria-invalid={Boolean(fieldErrors.category)}>{subscriptionCategories.map((category) => <option key={category}>{category}</option>)}</select>{fieldErrors.category && <span className="text-xs font-semibold text-red-600">{fieldErrors.category}</span>}</label>
+                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Renewal Date<input className="form-field" type="date" value={form.renewalDate} onChange={(event) => setForm({ ...form, renewalDate: event.target.value })} required aria-invalid={Boolean(fieldErrors.renewalDate)} />{fieldErrors.renewalDate && <span className="text-xs font-semibold text-[var(--danger)]">{fieldErrors.renewalDate}</span>}</label>
+                  <label className="grid gap-1.5 text-sm font-semibold text-[var(--muted)]">Category<select className="form-field" value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} required aria-invalid={Boolean(fieldErrors.category)}>{subscriptionCategories.map((category) => <option key={category}>{category}</option>)}</select>{fieldErrors.category && <span className="text-xs font-semibold text-[var(--danger)]">{fieldErrors.category}</span>}</label>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>

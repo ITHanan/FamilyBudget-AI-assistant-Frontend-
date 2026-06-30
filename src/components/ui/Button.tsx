@@ -7,7 +7,7 @@ const styles: Record<Variant, string> = {
   primary: 'bg-[var(--accent)] text-[var(--accent-contrast)] shadow-sm hover:brightness-95',
   secondary: 'border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text)] hover:bg-[var(--surface-hover)]',
   ghost: 'text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text)]',
-  danger: 'bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/15 dark:text-red-200'
+  danger: 'bg-[var(--danger-soft)] text-[var(--danger)] hover:brightness-95'
 };
 
 export function Button({

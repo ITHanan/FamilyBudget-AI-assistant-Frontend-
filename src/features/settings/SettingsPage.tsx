@@ -20,7 +20,7 @@ export function SettingsPage({ profileMode = false }: { profileMode?: boolean })
         <StaticCard>
           <SectionTitle icon={User} title="Profile" />
           {error ? (
-            <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-600" role="alert">
+            <p className="mt-4 rounded-lg bg-[var(--danger-soft)] px-3 py-2 text-sm font-semibold text-[var(--danger)]" role="alert">
               {error instanceof Error ? error.message : 'Could not load profile information.'}
             </p>
           ) : isLoading || !user ? (

@@ -195,7 +195,7 @@ function StatementButton({ statement, active, onClick }: { statement: BankStatem
         </div>
         <span className="rounded-full bg-[var(--card)] px-2 py-1 text-xs font-bold text-[var(--muted)]">{statement.transactionCount}</span>
       </div>
-      {statement.importStatus === 'Failed' && <p className="mt-2 text-xs font-semibold text-red-600">{statement.importError}</p>}
+      {statement.importStatus === 'Failed' && <p className="mt-2 text-xs font-semibold text-[var(--danger)]">{statement.importError}</p>}
     </button>
   );
 }
@@ -226,7 +226,7 @@ function SummaryPanel({ summary, loading }: { summary?: Awaited<ReturnType<typeo
             <Pie data={chartData} dataKey="amount" nameKey="category" innerRadius={58} outerRadius={88} paddingAngle={4}>
               {chartData.map((entry) => <Cell key={entry.category} fill={entry.fill} />)}
             </Pie>
-            <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
+            <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)' }} formatter={(value) => currency.format(Number(value))} />
           </PieChart>
         </ResponsiveContainer>
       )}
@@ -356,10 +356,10 @@ function TransactionRow({ transaction, updateCategory, updating }: { transaction
           remember
         </label>
       </td>
-      <td className={cn('px-4 py-3 font-bold', transaction.amount < 0 ? 'text-red-600' : 'text-emerald-600')}>{currency.format(transaction.amount)}</td>
+      <td className={cn('px-4 py-3 font-bold', transaction.amount < 0 ? 'text-[var(--danger)]' : 'text-[var(--success)]')}>{currency.format(transaction.amount)}</td>
       <td className="px-4 py-3 text-[var(--muted)]">{transaction.balance === null || transaction.balance === undefined ? '-' : currency.format(transaction.balance)}</td>
       <td className="px-4 py-3">{transaction.isRecurringCandidate ? <BadgeCheck className="text-[var(--accent)]" size={18} /> : <span className="text-[var(--muted)]">-</span>}</td>
-      <td className="px-4 py-3">{transaction.needsReview ? <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-1 text-xs font-bold text-amber-700"><AlertCircle size={13} /> Review</span> : <span className="text-[var(--muted)]">OK</span>}</td>
+      <td className="px-4 py-3">{transaction.needsReview ? <span className="inline-flex items-center gap-1 rounded-full bg-[var(--warning-soft)] px-2 py-1 text-xs font-bold text-[var(--warning)]"><AlertCircle size={13} /> Review</span> : <span className="text-[var(--muted)]">OK</span>}</td>
     </tr>
   );
 }

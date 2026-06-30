@@ -132,7 +132,7 @@ function NotificationsMenu({ open, setOpen }: { open: boolean; setOpen: (open: b
     <div className="relative">
       <button className="relative rounded-lg border border-[var(--border)] bg-[var(--card)] p-2 text-[var(--muted)] hover:text-[var(--text)]" aria-label="Notifications" onClick={() => setOpen(!open)}>
         <Bell size={19} />
-        {unreadCount > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">{unreadCount}</span>}
+        {unreadCount > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 place-items-center rounded-full bg-[var(--danger-strong)] px-1 text-[10px] font-bold text-[var(--danger-contrast)]">{unreadCount}</span>}
       </button>
       <AnimatePresence>
         {open && (
@@ -167,7 +167,7 @@ function NotificationRow({ item, onMarkRead, disabled }: { item: NotificationDto
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] p-3">
       <div className="flex items-start gap-3">
-        <span className={cn('mt-1 size-2.5 rounded-full', item.isRead ? 'bg-[var(--border)]' : 'bg-red-600')} />
+        <span className={cn('mt-1 size-2.5 rounded-full', item.isRead ? 'bg-[var(--border)]' : 'bg-[var(--danger-strong)]')} />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold">{item.message}</p>
           <p className="mt-1 text-xs text-[var(--muted)]">{new Date(item.createdAt).toLocaleDateString()}</p>

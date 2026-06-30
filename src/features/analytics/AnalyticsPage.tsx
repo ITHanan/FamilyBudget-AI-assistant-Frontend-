@@ -43,7 +43,7 @@ export function AnalyticsPage() {
             <LineChart data={spendingSeries} margin={{ left: -18, right: 12 }}>
               <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
+              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)' }} formatter={(value) => currency.format(Number(value))} />
               <Line type="monotone" dataKey="amount" stroke="var(--accent)" strokeWidth={3} dot={false} animationDuration={1000} />
             </LineChart>
           </ResponsiveContainer>
@@ -54,7 +54,7 @@ export function AnalyticsPage() {
             <BarChart data={growthData}>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => `${value}%`} />
+              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)' }} formatter={(value) => `${value}%`} />
               <Bar dataKey="value" fill="var(--accent)" radius={[8, 8, 0, 0]} animationDuration={900} />
             </BarChart>
           </ResponsiveContainer>
@@ -69,7 +69,7 @@ export function AnalyticsPage() {
               <Pie data={categoryBreakdown} dataKey="value" innerRadius={70} outerRadius={105} paddingAngle={4}>
                 {categoryBreakdown.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
               </Pie>
-              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
+              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)' }} formatter={(value) => currency.format(Number(value))} />
             </PieChart>
           </ResponsiveContainer>
           <div className="grid content-center gap-3">

@@ -24,8 +24,8 @@ const toneIcon = {
 };
 
 const toneClass = {
-  success: 'text-emerald-600',
-  error: 'text-red-600',
+  success: 'text-[var(--success)]',
+  error: 'text-[var(--danger)]',
   info: 'text-[var(--accent)]'
 };
 
@@ -60,7 +60,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 initial={{ opacity: 0, x: 24, scale: 0.98 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 24, scale: 0.98 }}
-                className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 shadow-[var(--shadow)]"
+                className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-[var(--text)] shadow-[var(--shadow)]"
               >
                 <div className="flex gap-3">
                   <Icon className={toneClass[toast.tone]} size={20} />

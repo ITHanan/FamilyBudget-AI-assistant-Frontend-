@@ -64,7 +64,7 @@ export function DashboardPage() {
     return (
       <Page title="Dashboard" eyebrow="Family subscription command center">
         <StaticCard>
-          <p className="font-semibold text-red-600">{error instanceof Error ? error.message : 'Could not load dashboard data.'}</p>
+          <p className="font-semibold text-[var(--danger)]">{error instanceof Error ? error.message : 'Could not load dashboard data.'}</p>
         </StaticCard>
       </Page>
     );
@@ -133,7 +133,7 @@ export function DashboardPage() {
                       <Cell key={entry.name} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10 }} formatter={(value) => currency.format(Number(value))} />
+                  <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)' }} formatter={(value) => currency.format(Number(value))} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="grid gap-2">
@@ -223,7 +223,7 @@ export function DashboardPage() {
             />
           </label>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className={suggestionError ? 'text-sm font-semibold text-red-600' : 'text-sm text-[var(--muted)]'} role={suggestionError ? 'alert' : undefined}>
+            <p className={suggestionError ? 'text-sm font-semibold text-[var(--danger)]' : 'text-sm text-[var(--muted)]'} role={suggestionError ? 'alert' : undefined}>
               {suggestionError || `${suggestion.length}/2000 characters`}
             </p>
             <Button className="sm:w-auto" disabled={suggestionMutation.isPending}>
@@ -242,7 +242,7 @@ export function DashboardPage() {
             className="w-full max-w-md rounded-lg border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)]"
           >
             <div className="flex items-start gap-3">
-              <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600">
+              <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-[var(--success-soft)] text-[var(--success)]">
                 <CheckCircle2 size={22} />
               </span>
               <div className="min-w-0 flex-1">
