@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root,
-:root[data-theme="modern"] {
+:root[data-theme="modern"],
+:root[data-theme="modern-day"] {
   --bg: #f7f8fb;
   --sidebar: #ffffff;
   --card: #ffffff;
@@ -19,7 +20,44 @@
   color-scheme: light;
 }
 
-:root[data-theme="dark"] {
+:root[data-theme="modern-night"] {
+  --bg: #111827;
+  --sidebar: #172033;
+  --card: #1f2937;
+  --surface-muted: #273449;
+  --surface-hover: #334155;
+  --text: #f8fafc;
+  --muted: #bac6d6;
+  --border: #3b4a61;
+  --accent: #60a5fa;
+  --accent-contrast: #0f172a;
+  --accent-soft: rgba(96, 165, 250, 0.16);
+  --nav-active: rgba(96, 165, 250, 0.14);
+  --ring: #93c5fd;
+  --shadow: 0 18px 55px rgba(0, 0, 0, 0.26);
+  color-scheme: dark;
+}
+
+:root[data-theme="dark-day"] {
+  --bg: #f4fbfa;
+  --sidebar: #ffffff;
+  --card: #ffffff;
+  --surface-muted: #e8f7f5;
+  --surface-hover: #d8f0ed;
+  --text: #10201f;
+  --muted: #637978;
+  --border: #d1e7e4;
+  --accent: #0f766e;
+  --accent-contrast: #ffffff;
+  --accent-soft: #d9f3ef;
+  --nav-active: #e4f7f4;
+  --ring: #5eead4;
+  --shadow: 0 16px 42px rgba(15, 118, 110, 0.1);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"],
+:root[data-theme="dark-night"] {
   --bg: #0a0f13;
   --sidebar: #0f171b;
   --card: #121b20;
@@ -37,22 +75,41 @@
   color-scheme: dark;
 }
 
-:root[data-theme="pastel"] {
-  --bg: #f9fbf8;
-  --sidebar: #fffdf8;
+:root[data-theme="pastel"],
+:root[data-theme="pastel-day"] {
+  --bg: #fbf8ff;
+  --sidebar: #fffaff;
   --card: #ffffff;
-  --surface-muted: #eef7f2;
-  --surface-hover: #f9eef1;
-  --text: #2e3430;
-  --muted: #69756e;
-  --border: #dfe9e2;
-  --accent: #0f766e;
+  --surface-muted: #f4ecff;
+  --surface-hover: #eee1ff;
+  --text: #2f2540;
+  --muted: #746985;
+  --border: #e6d8f6;
+  --accent: #7c3aed;
   --accent-contrast: #ffffff;
-  --accent-soft: #dff5ee;
-  --nav-active: #e8f7f1;
-  --ring: #7dd3c7;
-  --shadow: 0 16px 42px rgba(15, 118, 110, 0.1);
+  --accent-soft: #ede1ff;
+  --nav-active: #f0e6ff;
+  --ring: #c4a2ff;
+  --shadow: 0 16px 42px rgba(124, 58, 237, 0.1);
   color-scheme: light;
+}
+
+:root[data-theme="pastel-night"] {
+  --bg: #10091a;
+  --sidebar: #170e25;
+  --card: #1c122d;
+  --surface-muted: #26183b;
+  --surface-hover: #30204a;
+  --text: #fbf7ff;
+  --muted: #c4b3dc;
+  --border: #392651;
+  --accent: #6d28d9;
+  --accent-contrast: #1c102b;
+  --accent-soft: #6d28d9;
+  --nav-active: #6d28d9;
+  --ring: #a78bfa;
+  --shadow: 0 18px 55px rgba(5, 2, 10, 0.42);
+  color-scheme: dark;
 }
 
 * {
